@@ -1,0 +1,3 @@
+../Core/Src/usart-cli.c:39:6:CLIInit	1
+../Core/Src/usart-cli.c:51:6:RefreshStatus	1
+../Core/Src/usart-cli.c:63:6:HandleInput	14

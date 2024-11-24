@@ -1,0 +1,3 @@
+../Core/Src/usart-cli.c:39:6:CLIInit	32	static
+../Core/Src/usart-cli.c:51:6:RefreshStatus	32	static
+../Core/Src/usart-cli.c:63:6:HandleInput	24	static
