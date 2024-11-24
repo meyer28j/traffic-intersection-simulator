@@ -401,6 +401,8 @@ void StartCLIInterrupt(void *argument)
 void StartBlinkDirection(void *argument)
 {
 	/* USER CODE BEGIN StartBlinkDirection */
+	// TODO: 	refactor to use a given LED rather than figuring it out
+	//			from a given direction
 	Direction direction = (Direction *) argument;
 
 	/* Infinite loop */
