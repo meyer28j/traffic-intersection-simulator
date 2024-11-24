@@ -10,6 +10,8 @@
 #ifndef SRC_STATE_MACHINE_H_
 #define SRC_STATE_MACHINE_H_
 
+#include "stm32f1xx_hal.h"
+
 typedef enum {
 	TURNING_WAIT,
 	GREEN_WALK,
@@ -19,25 +21,22 @@ typedef enum {
 	RED_WAIT,
 	EMERGENCY,
 	NO_POWER,
-	STATE_COUNT 			// total number of states
-} StateType;
-
-// function pointer for State enter and run functions
-typedef void (*StateFunction)();
-
-typedef struct {
-	StateType direction; 	// state enum to direct
-	StateFunction enter;	// state-specific initialization
-	StateFunction run; 		// periodic state execution (e.g. toggle blinking LEDs)
 } State;
+
+typedef enum {
+	NS,
+	EW
+} Direction;
 
 typedef struct {
 	State ns_state;			// current north/south lights state
 	State ew_state;			// current east/west lights state
+	Direction direction;	// current direction (NS or EW)
 } TrafficLightStateMachine;
 
 // state machine instance
 static TrafficLightStateMachine sm;
+
 
 /**
  * @brief: Initialization for state machine
@@ -51,6 +50,7 @@ static TrafficLightStateMachine sm;
  */
 void SMInit();
 
+
 /**
  * @brief: Utility for deactivating all outputs
  *
@@ -58,10 +58,21 @@ void SMInit();
  * if any errors in the output occur that they are handled as
  * soon as the state changes again.
  *
+ * Preconditions:
+ * - state machine must be initialized
+ *
  * Postconditions:
  * - all GPIO output ports are unset, turning off all LEDs
  */
 void clear_outputs();
+
+
+/**
+ * @brief: Function that parses behavior according to the given
+ * state (NS or EW)
+ */
+void enter_state(State next_state);
+
 
 /**
  * @brief: Changes state to the provided parameter
@@ -71,8 +82,26 @@ void clear_outputs();
  * initialization function.
  *
  * Preconditions:
+ * - state machine must be initialized
  * - the 'next_state' parameter must be a valid state
+ *
+ * Postconditions:
+ * - if a state is switched to RED_WAIT, it also changes the direction
+ * so the next state change to TURNING_WAIT is in the other direction
  */
 void change_state(State next_state);
+
+
+/**
+ * @brief: Toggles the direction between NS and EW
+ *
+ * Preconditions:
+ * - state machine must be intialized
+ *
+ * Postconditions
+ * - state machine member "direction" changed to either
+ * NS or EW depending on existing direction
+ */
+void change_direction();
 
 #endif /* SRC_STATE_MACHINE_H_ */

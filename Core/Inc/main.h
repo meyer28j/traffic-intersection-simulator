@@ -33,6 +33,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "usart-cli.h"
 #include "gpio.h"
+#include "state_machine.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

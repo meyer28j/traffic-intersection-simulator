@@ -191,7 +191,7 @@ int main(void)
   startCLIITHandle = osThreadNew(StartCLIInterrupt, NULL, &startCLIIT_attributes);
 
   /* creation of blinkDirection */
-  blinkDirectionHandle = osThreadNew(StartBlinkDirection, (void*) direction, &blinkDirection_attributes);
+  blinkDirectionHandle = osThreadNew(StartBlinkDirection, NULL, &blinkDirection_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -400,17 +400,17 @@ void StartCLIInterrupt(void *argument)
 /* USER CODE END Header_StartBlinkDirection */
 void StartBlinkDirection(void *argument)
 {
-	/* USER CODE BEGIN StartBlinkDirection */
+  /* USER CODE BEGIN StartBlinkDirection */
 	// TODO: 	refactor to use a given LED rather than figuring it out
 	//			from a given direction
-	Direction direction = (Direction *) argument;
+	Direction direction = *((Direction *) argument);
 
 	/* Infinite loop */
 	for(;;)
 	{
 	osDelay(1);
 	}
-	/* USER CODE END StartBlinkDirection */
+  /* USER CODE END StartBlinkDirection */
 }
 
 /**
