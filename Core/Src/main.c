@@ -349,14 +349,14 @@ void StartStateHandler(void *argument)
 /* USER CODE END Header_StartUpdateCLI */
 void StartUpdateCLI(void *argument)
 {
-  /* USER CODE BEGIN StartUpdateCLI */
-	  /* Infinite loop */
-	  for(;;)
-	  {
-		  RefreshStatus(&huart2);
-		  osDelay(3000);
-	  }
-  /* USER CODE END StartUpdateCLI */
+	/* USER CODE BEGIN StartUpdateCLI */
+	/* Infinite loop */
+	for(;;)
+	{
+		RefreshStatus(&huart2);
+		osDelay(3000);
+	}
+	/* USER CODE END StartUpdateCLI */
 }
 
 /* USER CODE BEGIN Header_StartCLIInterrupt */
@@ -369,8 +369,14 @@ void StartUpdateCLI(void *argument)
 void StartCLIInterrupt(void *argument)
 {
   /* USER CODE BEGIN StartCLIInterrupt */
-  HAL_UART_Receive_IT(&huart2, &RXChar, 1);
-  vTaskSuspend(startCLIITHandle);
+
+	// begin receiving characters through UART
+	// interrupt callback restarts the Receive_IT call
+	HAL_UART_Receive_IT(&huart2, &RXChar, 1);
+
+	// suspend task as the utility is handled
+	// by the interrupt callback
+	vTaskSuspend(NULL);
   /* USER CODE END StartCLIInterrupt */
 }
 
