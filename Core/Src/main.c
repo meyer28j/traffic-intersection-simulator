@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "task.h" // vTaskSuspend used in task startCLIIT
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,6 +64,13 @@ const osThreadAttr_t startCLIIT_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityBelowNormal,
 };
+/* Definitions for blinkDirection */
+osThreadId_t blinkDirectionHandle;
+const osThreadAttr_t blinkDirection_attributes = {
+  .name = "blinkDirection",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 /* USER CODE BEGIN PV */
 volatile uint16_t period = 400;
 
@@ -79,6 +86,7 @@ static void MX_USART2_UART_Init(void);
 void StartStateHandler(void *argument);
 void StartUpdateCLI(void *argument);
 void StartCLIInterrupt(void *argument);
+void StartBlinkDirection(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -181,6 +189,9 @@ int main(void)
 
   /* creation of startCLIIT */
   startCLIITHandle = osThreadNew(StartCLIInterrupt, NULL, &startCLIIT_attributes);
+
+  /* creation of blinkDirection */
+  blinkDirectionHandle = osThreadNew(StartBlinkDirection, (void*) direction, &blinkDirection_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -349,14 +360,14 @@ void StartStateHandler(void *argument)
 /* USER CODE END Header_StartUpdateCLI */
 void StartUpdateCLI(void *argument)
 {
-	/* USER CODE BEGIN StartUpdateCLI */
+  /* USER CODE BEGIN StartUpdateCLI */
 	/* Infinite loop */
 	for(;;)
 	{
 		RefreshStatus(&huart2);
 		osDelay(3000);
 	}
-	/* USER CODE END StartUpdateCLI */
+  /* USER CODE END StartUpdateCLI */
 }
 
 /* USER CODE BEGIN Header_StartCLIInterrupt */
@@ -378,6 +389,26 @@ void StartCLIInterrupt(void *argument)
 	// by the interrupt callback
 	vTaskSuspend(NULL);
   /* USER CODE END StartCLIInterrupt */
+}
+
+/* USER CODE BEGIN Header_StartBlinkDirection */
+/**
+* @brief Function implementing the blinkDirection thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartBlinkDirection */
+void StartBlinkDirection(void *argument)
+{
+	/* USER CODE BEGIN StartBlinkDirection */
+	Direction direction = (Direction *) argument;
+
+	/* Infinite loop */
+	for(;;)
+	{
+	osDelay(1);
+	}
+	/* USER CODE END StartBlinkDirection */
 }
 
 /**
