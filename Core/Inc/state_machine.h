@@ -34,6 +34,7 @@ typedef struct {
 	Direction direction;	// current direction (NS or EW)
 } TrafficLightStateMachine;
 
+extern TrafficLightStateMachine sm; // make available to CLI status updates
 
 /**
  * @brief: Utility for deactivating all outputs
@@ -87,5 +88,11 @@ void change_state(State next_state);
  * NS or EW depending on existing direction
  */
 void change_direction();
+
+
+/**
+ * @brief: Utility for retrieving state name from enum
+ */
+const char* State_To_String(State state);
 
 #endif /* SRC_STATE_MACHINE_H_ */

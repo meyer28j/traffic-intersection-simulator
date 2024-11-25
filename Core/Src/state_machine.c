@@ -83,3 +83,19 @@ void change_direction()
 	// toggle direction between NS and EW
 	sm.direction = sm.direction == NS ? EW : NS;
 }
+
+const char* State_To_String(State state)
+{
+	switch (state)
+	{
+	case TURNING_WAIT: 		return "TURNING_WAIT";
+	case GREEN_WALK:		return "GREEN_WALK";
+	case GREEN_WAIT_FLASH:	return "GREEN_WAIT_FLASHING";
+	case GREEN_WAIT:		return "GREEN_WAIT";
+	case YELLOW_WAIT:		return "YELLOW_WAIT";
+	case RED_WAIT:			return "RED_WAIT";
+	case EMERGENCY:			return "EMERGENCY";
+	case NO_POWER:			return "NO_POWER";
+	default:				return "ERROR";
+	}
+}
