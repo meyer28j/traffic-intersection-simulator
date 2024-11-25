@@ -34,9 +34,6 @@ typedef struct {
 	Direction direction;	// current direction (NS or EW)
 } TrafficLightStateMachine;
 
-// state machine instance
-static TrafficLightStateMachine sm;
-
 
 /**
  * @brief: Initialization for state machine

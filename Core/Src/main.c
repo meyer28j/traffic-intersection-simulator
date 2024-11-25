@@ -158,7 +158,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  CLIInit(&huart2);		// initialize CLI
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -342,13 +342,20 @@ static void MX_GPIO_Init(void)
 /* USER CODE END Header_StartStateHandler */
 void StartStateHandler(void *argument)
 {
-  /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END 5 */
+	/* USER CODE BEGIN 5 */
+	// initialize state machine
+	SMInit();
+	/* Infinite loop */
+	for(;;)
+	{
+		// DEBUG: cycle through each standard state
+		for (int state_count = 0; state_count < 6; state_count++)
+		{
+			change_state(state_count);
+			osDelay(1000);
+		}
+	}
+	/* USER CODE END 5 */
 }
 
 /* USER CODE BEGIN Header_StartUpdateCLI */
@@ -380,6 +387,8 @@ void StartUpdateCLI(void *argument)
 void StartCLIInterrupt(void *argument)
 {
   /* USER CODE BEGIN StartCLIInterrupt */
+	// initialize CLI
+	 CLIInit(&huart2);
 
 	// begin receiving characters through UART
 	// interrupt callback restarts the Receive_IT call
