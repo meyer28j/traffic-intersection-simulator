@@ -8,7 +8,7 @@
 #include "state_machine.h"
 
 // state machine instance
-static TrafficLightStateMachine sm = {RED_WAIT, RED_WAIT, NS};
+TrafficLightStateMachine sm = {RED_WAIT, RED_WAIT, NS};
 
 void ClearOutputs()
 {
@@ -24,7 +24,7 @@ void EnterState(State next_state)
 void ChangeState(State next_state)
 {
 	// turn off all LEDs regardless of state
-	clear_outputs();
+	ClearOutputs();
 
 	// get relevant state machine directional state
 	State* direction_state = sm.direction == NS ? &sm.ns_state : &sm.ew_state;
@@ -61,7 +61,7 @@ void ChangeState(State next_state)
 			break;
 		case RED_WAIT:
 			// change direction
-			change_direction();
+			ChangeDirection();
 			break;
 		case EMERGENCY:
 			// TODO: block state changing until emergency lifted
@@ -90,7 +90,7 @@ const char* StateToString(State state)
 	{
 	case TURNING_WAIT: 		return "TURNING_WAIT";
 	case GREEN_WALK:		return "GREEN_WALK";
-	case GREEN_WAIT_FLASH:	return "GREEN_WAIT_FLASHING";
+	case GREEN_WAIT_FLASH:	return "GREEN_WAIT_FLASH";
 	case GREEN_WAIT:		return "GREEN_WAIT";
 	case YELLOW_WAIT:		return "YELLOW_WAIT";
 	case RED_WAIT:			return "RED_WAIT";
