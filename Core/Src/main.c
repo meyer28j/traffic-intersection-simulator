@@ -71,6 +71,16 @@ const osThreadAttr_t blinkDirection_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for stateMachine */
+osMutexId_t stateMachineHandle;
+const osMutexAttr_t stateMachine_attributes = {
+  .name = "stateMachine"
+};
+/* Definitions for statePeriod */
+osMutexId_t statePeriodHandle;
+const osMutexAttr_t statePeriod_attributes = {
+  .name = "statePeriod"
+};
 /* USER CODE BEGIN PV */
 volatile uint16_t period = 400;
 
@@ -163,6 +173,12 @@ int main(void)
 
   /* Init scheduler */
   osKernelInitialize();
+  /* Create the mutex(es) */
+  /* creation of stateMachine */
+  stateMachineHandle = osMutexNew(&stateMachine_attributes);
+
+  /* creation of statePeriod */
+  statePeriodHandle = osMutexNew(&statePeriod_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -342,7 +358,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE END Header_StartStateHandler */
 void StartStateHandler(void *argument)
 {
-	/* USER CODE BEGIN 5 */
+  /* USER CODE BEGIN 5 */
 	/* Infinite loop */
 	for(;;)
 	{
@@ -354,7 +370,7 @@ void StartStateHandler(void *argument)
 			osDelay(state_periods[state_count]);
 		}
 	}
-	/* USER CODE END 5 */
+  /* USER CODE END 5 */
 }
 
 /* USER CODE BEGIN Header_StartUpdateCLI */
