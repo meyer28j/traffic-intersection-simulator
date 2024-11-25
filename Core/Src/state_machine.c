@@ -28,11 +28,6 @@ void ClearOutputs()
 	return;
 }
 
-void EnterState(State next_state)
-{
-	return;
-}
-
 void ChangeState(State next_state)
 {
 	// turn off all LEDs regardless of state
@@ -42,7 +37,11 @@ void ChangeState(State next_state)
 	State* direction_state = sm.direction == NS ? &sm.ns_state : &sm.ew_state;
 
 	// change to the next state
-	*direction_state = next_state;
+	if (xSemaphoreTake(stateMachineHandle, (TickType_t) 100 == pdTRUE))
+	{
+		*direction_state = next_state;
+		xSemaphoreGive(stateMachineHandle);
+	}
 
 	/*
 	 * handle:
@@ -86,14 +85,17 @@ void ChangeState(State next_state)
 			// should never reach this point
 			Error_Handler();
 	}
-
-	return;
 }
 
 void ChangeDirection()
 {
+	// TODO: create while-loop that attempts to periodically retake the mutex on failure
 	// toggle direction between NS and EW
-	sm.direction = sm.direction == NS ? EW : NS;
+	if (xSemaphoreTake(stateMachineHandle, (TickType_t) 100 == pdTRUE))
+	{
+		sm.direction = sm.direction == NS ? EW : NS;
+		xSemaphoreGive(stateMachineHandle);
+	}
 }
 
 const char* StateToString(State state)

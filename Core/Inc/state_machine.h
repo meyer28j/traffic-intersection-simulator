@@ -11,6 +11,8 @@
 #define SRC_STATE_MACHINE_H_
 
 #include "stm32f1xx_hal.h"
+#include "FreeRTOS.h"
+#include "semphr.h"
 
 typedef enum
 {
@@ -41,7 +43,12 @@ typedef struct
 // TODO: near end of project, update to realistic times
 extern uint16_t state_periods[];
 
-extern TrafficLightStateMachine sm; // make available to CLI status updates
+// make available to CLI status updates
+extern TrafficLightStateMachine sm;
+
+// mutex for state machine
+// TODO: ensure type is osMutexId_t instead of SemaphoreHandle_t
+extern SemaphoreHandle_t stateMachineHandle;
 
 /**
  * @brief: Utility for deactivating all outputs
@@ -57,13 +64,6 @@ extern TrafficLightStateMachine sm; // make available to CLI status updates
  * - all GPIO output ports are unset, turning off all LEDs
  */
 void ClearOutputs();
-
-
-/**
- * @brief: Function that parses behavior according to the given
- * state (NS or EW)
- */
-void EnterState(State next_state);
 
 
 /**
