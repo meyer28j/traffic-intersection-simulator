@@ -31,10 +31,8 @@ The milestone revolves around the initial implementing the software of the simul
     - Only enables LEDs
     - Operation assumes `ClearOutput` called before each state change that unsets all LED outputs before setting the new state's LEDs
 6. Implement task that blinks a given light(s)
-    - Blocks/unblocks for required states (TURNING_WAIT, GREEN_WAIT_FLASH, and NO_POWER)
+    - Blocked/unblocked for required states (TURNING_WAIT, GREEN_WAIT_FLASH, and NO_POWER)
 7. Add CLI control of state machine
-    - Manually set state
-    - Update state period
     - pause/resume state execution
     - Enter and restore from EMERGENCY and NO_POWER states
 8. Add hardware interrupts simulating a pedestrian hitting the crosswalk button
