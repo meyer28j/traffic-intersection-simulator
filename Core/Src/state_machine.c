@@ -10,13 +10,6 @@
 // state machine instance
 static TrafficLightStateMachine sm = {RED_WAIT, RED_WAIT, NS};
 
-void SMInit()
-{
-	// set states to be advance-left NS
-	sm.ns_state = TURNING_WAIT;
-	sm.ew_state = RED_WAIT;
-}
-
 void clear_outputs()
 {
 	// TODO: unset all GPIO port/pins used for LEDs
