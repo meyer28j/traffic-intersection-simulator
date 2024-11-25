@@ -113,28 +113,6 @@ void StartBlinkDirection(void *argument);
   * @param huart:  handler to USART2 ( the only used one - no need to check)
   * @retval None
   */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-	// process input string
-	HandleInput(huart, RXChar);
-
-	// wait until status is ok
-	while((HAL_UART_GetState(huart)&HAL_UART_STATE_BUSY_RX)
-			== HAL_UART_STATE_BUSY_RX);
-	//Listen for the interrupt and buffer one character at a time.
-	status = HAL_UART_Receive_IT(huart, &RXChar, 1);
-	if (status != HAL_OK)
-	{
-		Error_Handler();
-	}
-
-	return;
-}
-
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-	// do nothing! :O
-}
 /* USER CODE END 0 */
 
 /**
@@ -346,7 +324,28 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	// process input string
+	HandleInput(huart, RXChar);
 
+	// wait until status is ok
+	while((HAL_UART_GetState(huart)&HAL_UART_STATE_BUSY_RX)
+			== HAL_UART_STATE_BUSY_RX);
+	//Listen for the interrupt and buffer one character at a time.
+	status = HAL_UART_Receive_IT(huart, &RXChar, 1);
+	if (status != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	return;
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+	// do nothing! :O
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartStateHandler */
