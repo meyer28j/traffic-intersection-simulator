@@ -10,18 +10,18 @@
 // state machine instance
 static TrafficLightStateMachine sm = {RED_WAIT, RED_WAIT, NS};
 
-void clear_outputs()
+void ClearOutputs()
 {
 	// TODO: unset all GPIO port/pins used for LEDs
 	return;
 }
 
-void enter_state(State next_state)
+void EnterState(State next_state)
 {
 	return;
 }
 
-void change_state(State next_state)
+void ChangeState(State next_state)
 {
 	// turn off all LEDs regardless of state
 	clear_outputs();
@@ -78,13 +78,13 @@ void change_state(State next_state)
 	return;
 }
 
-void change_direction()
+void ChangeDirection()
 {
 	// toggle direction between NS and EW
 	sm.direction = sm.direction == NS ? EW : NS;
 }
 
-const char* State_To_String(State state)
+const char* StateToString(State state)
 {
 	switch (state)
 	{

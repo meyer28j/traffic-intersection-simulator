@@ -49,14 +49,14 @@ extern TrafficLightStateMachine sm; // make available to CLI status updates
  * Postconditions:
  * - all GPIO output ports are unset, turning off all LEDs
  */
-void clear_outputs();
+void ClearOutputs();
 
 
 /**
  * @brief: Function that parses behavior according to the given
  * state (NS or EW)
  */
-void enter_state(State next_state);
+void EnterState(State next_state);
 
 
 /**
@@ -74,7 +74,7 @@ void enter_state(State next_state);
  * - if a state is switched to RED_WAIT, it also changes the direction
  * so the next state change to TURNING_WAIT is in the other direction
  */
-void change_state(State next_state);
+void ChangeState(State next_state);
 
 
 /**
@@ -87,12 +87,12 @@ void change_state(State next_state);
  * - state machine member "direction" changed to either
  * NS or EW depending on existing direction
  */
-void change_direction();
+void ChangeDirection();
 
 
 /**
  * @brief: Utility for retrieving state name from enum
  */
-const char* State_To_String(State state);
+const char* StateToString(State state);
 
 #endif /* SRC_STATE_MACHINE_H_ */

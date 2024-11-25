@@ -349,7 +349,7 @@ void StartStateHandler(void *argument)
 		// DEBUG: cycle through each standard state
 		for (int state_count = 0; state_count < 6; state_count++)
 		{
-			change_state(state_count);
+			ChangeState(state_count);
 			osDelay(1000);
 		}
 	}
@@ -377,7 +377,7 @@ void StartUpdateCLI(void *argument)
 
 /* USER CODE BEGIN Header_StartCLIInterrupt */
 /**
-* @brief Function implementing the startCLIInterru thread.
+* @brief Function implementing the startCLIInterrupt thread.
 * @param argument: Not used
 * @retval None
 */
@@ -408,8 +408,8 @@ void StartCLIInterrupt(void *argument)
 void StartBlinkDirection(void *argument)
 {
   /* USER CODE BEGIN StartBlinkDirection */
-	// TODO: 	refactor to use a given LED rather than figuring it out
-	//			from a given direction
+	// TODO: 	refactor to use an LED provided from argument
+	//			rather than figuring it out from a given direction
 	Direction direction = *((Direction *) argument);
 
 	/* Infinite loop */
