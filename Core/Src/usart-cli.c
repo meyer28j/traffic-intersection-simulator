@@ -7,29 +7,33 @@
 
 
 #include "usart-cli.h"
+#include "state_machine.h"
 
-static const char ANSI_ERASE_SCREEN[] = {"\x1b[2J"};
-static const char ANSI_SCROLL_WINDOW[] = {"\x1b[7;20r"};
-static const char ANSI_SAVE_CURSOR_POS[] = {"\x1b[s"};
-static const char ANSI_RETURN_CURSOR_POS[] = {"\x1b[u"};
-static const char ANSI_MOVE_TO_STATUS_LINE[] = {"\x1b[5;0f"};
+static const char ANSI_ERASE_SCREEN[] = 		{"\x1b[2J"};
+static const char ANSI_ERASE_LINE[] = 			{"\x1b[2K"};
+static const char ANSI_SCROLL_WINDOW[] = 		{"\x1b[8;20r"}; // row 8 to 20
+static const char ANSI_SAVE_CURSOR_POS[] = 		{"\x1b[s"};
+static const char ANSI_RETURN_CURSOR_POS[] = 	{"\x1b[u"};
+static const char ANSI_MOVE_TO_STATUS_LINE[] = 	{"\x1b[5;0f"}; // row 5, column 0
+static const char ANSI_HIDE_CURSOR[] =			{"\x1b[?25l"};
+static const char ANSI_SHOW_CURSOR[] =			{"\x1b[?25h"};
+
 
 static const char INTRO_MSG[] = "\r\n"
 		"\t**UART Command Line Interface**"
 		"\r\n"
 		"Enter a command to control the on-board LED.\r\n"
 		"\r\n"
-		"PERIOD: 0\r\n"
+		"NS Lights: UNINITIALIZED\r\n"
+		"EW Lights: UNINITIALIZED\r\n"
 		"***************\r\n"
 		"\r\n";
 static const char HELP_MSG[] = "Commands:\r\n"
 		"(c)lear - Clear the command window\r\n"
-		"(h)elp - Display this message again\r\n"
-		"(p)eriod - Set period of on-board LED in ms (50 - 3000)\r\n";
+		"(h)elp - Display this message again\r\n";
 static const char PROMPT[] = "Enter a command: ";
 // error message used in main to check reception status, must be non-static
 const char ERROR_CRITICAL[] = "Critical error, exiting program...\r\n";
-static const char ERROR_PERIOD[] = "Usage: enter a number between 50 and 3000.\r\n";
 
 uint8_t c_pos = 0;
 char input[MAX_CLI_LEN] = {'\0'};
@@ -50,10 +54,21 @@ void CLIInit(UART_HandleTypeDef* huart)
 
 void RefreshStatus(UART_HandleTypeDef* huart)
 {
-	// move cursor to status line and rewrite "PERIOD" message
-	snprintf(response, MSG_LEN, "%s%sPERIOD: %d  %s",
-			ANSI_SAVE_CURSOR_POS, ANSI_MOVE_TO_STATUS_LINE,
-			period, ANSI_RETURN_CURSOR_POS);
+	// retrieve traffic light states as strings
+	char NS_status[20];
+	strlcpy(NS_status, StateToString(sm.ns_state), sizeof(NS_status));
+	char EW_status[20];
+	strlcpy(EW_status, StateToString(sm.ew_state), sizeof(EW_status));
+
+	// move cursor to status line and rewrite "XX Lights:" messages
+	snprintf(response, MSG_LEN, "%s%s%s"
+			"%sNS Lights: %s\n\r"
+			"%sEW Lights: %s"
+			"%s%s",
+			ANSI_SAVE_CURSOR_POS, ANSI_HIDE_CURSOR, ANSI_MOVE_TO_STATUS_LINE,
+			ANSI_ERASE_LINE, NS_status,
+			ANSI_ERASE_LINE, EW_status,
+			ANSI_RETURN_CURSOR_POS, ANSI_SHOW_CURSOR);
 
 	HAL_UART_Transmit(huart, (uint8_t*)response, strlen(response), TIMEOUT);
 
@@ -83,6 +98,7 @@ void HandleInput(UART_HandleTypeDef* huart, uint8_t c)
 		}
 		else
 		{
+			/*
 			// parse for period input argument
 			int period_arg = 0;
 			if (sscanf(input, "period %d", &period_arg) == 1
@@ -98,9 +114,13 @@ void HandleInput(UART_HandleTypeDef* huart, uint8_t c)
 					RefreshStatus(huart);
 				}
 			} else { // invalid command
+
 				snprintf(response, MSG_LEN, "'%s' is an unrecognized command.\r\n", input);
 				HAL_UART_Transmit(huart, (uint8_t*)response, strlen(response), TIMEOUT);
 			}
+			*/
+			snprintf(response, MSG_LEN, "'%s' is an unrecognized command.\r\n", input);
+			HAL_UART_Transmit(huart, (uint8_t*)response, strlen(response), TIMEOUT);
 		}
 
 		memset(input, 0, strlen(input)); // clear string buffer
