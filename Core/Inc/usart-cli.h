@@ -23,7 +23,6 @@ extern uint8_t c_pos; 			// input character position, for tracking /b
 extern char input[MAX_CLI_LEN];	// input buffer
 extern const char ERROR_CRITICAL[]; // error message used in main.c
 
-extern volatile uint16_t period; // period command
 extern osMutexId periodMutexHandle;
 
 

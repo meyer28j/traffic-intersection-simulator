@@ -37,7 +37,7 @@ void ChangeState(State next_state)
 	State* direction_state = sm.direction == NS ? &sm.ns_state : &sm.ew_state;
 
 	// change to the next state
-	if (xSemaphoreTake(stateMachineHandle, (TickType_t) 100 == pdTRUE))
+	if (xSemaphoreTake(stateMachineHandle, (TickType_t) 100) == pdTRUE)
 	{
 		*direction_state = next_state;
 		xSemaphoreGive(stateMachineHandle);
@@ -91,7 +91,7 @@ void ChangeDirection()
 {
 	// TODO: create while-loop that attempts to periodically retake the mutex on failure
 	// toggle direction between NS and EW
-	if (xSemaphoreTake(stateMachineHandle, (TickType_t) 100 == pdTRUE))
+	if (xSemaphoreTake(stateMachineHandle, (TickType_t) 100) == pdTRUE)
 	{
 		sm.direction = sm.direction == NS ? EW : NS;
 		xSemaphoreGive(stateMachineHandle);
@@ -111,5 +111,45 @@ const char* StateToString(State state)
 	case EMERGENCY:			return "EMERGENCY";
 	case NO_POWER:			return "NO_POWER";
 	default:				return "ERROR";
+	}
+}
+
+const uint16_t StringToState(const char* state_name)
+{
+	if (strcmp(state_name, "TURNING_WAIT") == 0)
+	{
+		return TURNING_WAIT;
+	}
+	else if (strcmp(state_name, "GREEN_WALK") == 0)
+	{
+		return GREEN_WALK;
+	}
+	else if (strcmp(state_name, "GREEN_WAIT_FLASH") == 0)
+	{
+		return GREEN_WAIT_FLASH;
+	}
+	else if (strcmp(state_name, "GREEN_WAIT") == 0)
+	{
+		return GREEN_WAIT;
+	}
+	else if (strcmp(state_name, "YELLOW_WAIT") == 0)
+	{
+		return YELLOW_WAIT;
+	}
+	else if (strcmp(state_name, "RED_WAIT") == 0)
+	{
+		return RED_WAIT;
+	}
+	else if (strcmp(state_name, "EMERGENCY") == 0)
+	{
+		return EMERGENCY;
+	}
+	else if (strcmp(state_name, "NO_POWER") == 0)
+	{
+		return NO_POWER;
+	}
+	else
+	{
+		return -1;  // ERROR flag
 	}
 }

@@ -20,9 +20,9 @@ static const char ANSI_SHOW_CURSOR[] =			{"\x1b[?25h"};
 
 
 static const char INTRO_MSG[] = "\r\n"
-		"\t**UART Command Line Interface**"
+		"**Traffic Light Simulator Command Line Interface**"
 		"\r\n"
-		"Enter a command to control the on-board LED.\r\n"
+		"Enter a command to control the simulator.\r\n"
 		"\r\n"
 		"NS Lights: UNINITIALIZED\r\n"
 		"EW Lights: UNINITIALIZED\r\n"
@@ -30,15 +30,16 @@ static const char INTRO_MSG[] = "\r\n"
 		"\r\n";
 static const char HELP_MSG[] = "Commands:\r\n"
 		"(c)lear - Clear the command window\r\n"
-		"(h)elp - Display this message again\r\n";
+		"(h)elp - Display this message again\r\n"
+		"(p)eriod <state name> <period in ms> - Update state period\r\n";
 static const char PROMPT[] = "Enter a command: ";
 // error message used in main to check reception status, must be non-static
 const char ERROR_CRITICAL[] = "Critical error, exiting program...\r\n";
+const char ERROR_PERIOD[] = "Usage: period <state name> <period in ms> --- 1000 < 30000\r\n";
 
 uint8_t c_pos = 0;
 char input[MAX_CLI_LEN] = {'\0'};
 char response[MSG_LEN] = {'\0'};
-
 
 void CLIInit(UART_HandleTypeDef* huart)
 {
@@ -98,19 +99,30 @@ void HandleInput(UART_HandleTypeDef* huart, uint8_t c)
 		}
 		else
 		{
-			/*
 			// parse for period input argument
-			int period_arg = 0;
-			if (sscanf(input, "period %d", &period_arg) == 1
-				|| sscanf(input, "p %d", &period_arg) == 1)
+			char period_arg_state[20] = {'\0'};
+			uint16_t period_arg_ms = 0;
+
+			if (sscanf(input, "period %20s %hu", period_arg_state, &period_arg_ms) == 2
+				|| sscanf(input, "p %20s %hu", period_arg_state, &period_arg_ms) == 2)
 			{
-				if (period_arg > 3000 || period_arg < 50)
+				// convert state argument to enum
+				uint16_t period_state = StringToState(period_arg_state);
+				if (period_arg_ms > 30000 || period_arg_ms < 1000
+					|| period_state == -1)
 				{
 					HAL_UART_Transmit(huart, (uint8_t*)ERROR_PERIOD, strlen(ERROR_PERIOD), TIMEOUT);
 				}
 				else
 				{
-					period = (uint16_t)period_arg;
+					// TODO: uncomment this block when this function is no longer called from an interrupt
+					//if (xSemaphoreTake(statePeriodHandle, (TickType_t) 100) == pdTRUE)
+					//{
+						state_periods[period_state] = period_arg_ms;
+					//	xSemaphoreGive(statePeriodHandle);
+					//}
+					snprintf(response, MSG_LEN, "Updating %s period to %d\r\n", period_arg_state, period_arg_ms);
+					HAL_UART_Transmit(huart, (uint8_t*)response, strlen(response), TIMEOUT);
 					RefreshStatus(huart);
 				}
 			} else { // invalid command
@@ -118,9 +130,6 @@ void HandleInput(UART_HandleTypeDef* huart, uint8_t c)
 				snprintf(response, MSG_LEN, "'%s' is an unrecognized command.\r\n", input);
 				HAL_UART_Transmit(huart, (uint8_t*)response, strlen(response), TIMEOUT);
 			}
-			*/
-			snprintf(response, MSG_LEN, "'%s' is an unrecognized command.\r\n", input);
-			HAL_UART_Transmit(huart, (uint8_t*)response, strlen(response), TIMEOUT);
 		}
 
 		memset(input, 0, strlen(input)); // clear string buffer

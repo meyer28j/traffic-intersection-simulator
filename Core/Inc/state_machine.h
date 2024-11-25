@@ -10,6 +10,7 @@
 #ifndef SRC_STATE_MACHINE_H_
 #define SRC_STATE_MACHINE_H_
 
+#include <string.h>
 #include "stm32f1xx_hal.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
@@ -49,6 +50,7 @@ extern TrafficLightStateMachine sm;
 // mutex for state machine
 // TODO: ensure type is osMutexId_t instead of SemaphoreHandle_t
 extern SemaphoreHandle_t stateMachineHandle;
+extern SemaphoreHandle_t statePeriodHandle;
 
 /**
  * @brief: Utility for deactivating all outputs
@@ -101,5 +103,10 @@ void ChangeDirection();
  * @brief: Utility for retrieving state name from enum
  */
 const char* StateToString(State state);
+
+/**
+ * @brief: Utility for retrieving state enum from name
+ */
+const uint16_t StringToState(const char* state_name);
 
 #endif /* SRC_STATE_MACHINE_H_ */
