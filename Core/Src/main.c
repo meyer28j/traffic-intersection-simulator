@@ -370,7 +370,7 @@ void StartUpdateCLI(void *argument)
 	for(;;)
 	{
 		RefreshStatus(&huart2);
-		osDelay(3000);
+		osDelay(500);
 	}
   /* USER CODE END StartUpdateCLI */
 }
