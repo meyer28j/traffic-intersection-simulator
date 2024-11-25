@@ -12,7 +12,8 @@
 
 #include "stm32f1xx_hal.h"
 
-typedef enum {
+typedef enum
+{
 	TURNING_WAIT,
 	GREEN_WALK,
 	GREEN_WAIT_FLASH,
@@ -23,16 +24,22 @@ typedef enum {
 	NO_POWER,
 } State;
 
-typedef enum {
+typedef enum
+{
 	NS,
 	EW
 } Direction;
 
-typedef struct {
+typedef struct
+{
 	State ns_state;			// current north/south lights state
 	State ew_state;			// current east/west lights state
 	Direction direction;	// current direction (NS or EW)
 } TrafficLightStateMachine;
+
+// externally available to CLI to update periods
+// TODO: near end of project, update to realistic times
+extern uint16_t state_periods[];
 
 extern TrafficLightStateMachine sm; // make available to CLI status updates
 

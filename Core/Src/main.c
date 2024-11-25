@@ -351,7 +351,7 @@ void StartStateHandler(void *argument)
 		{
 			ChangeState(state_count);
 			RefreshStatus(&huart2);
-			osDelay(1000);
+			osDelay(state_periods[state_count]);
 		}
 	}
 	/* USER CODE END 5 */

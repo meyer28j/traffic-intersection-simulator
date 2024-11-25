@@ -10,6 +10,18 @@
 // state machine instance
 TrafficLightStateMachine sm = {RED_WAIT, RED_WAIT, NS};
 
+// externally available state periods
+uint16_t state_periods[]= {
+		2000,	// TURNING_WAIT
+		4000,	// GREEN_WALK
+		2000,	// GREEN_WAIT_FLASH
+		2000,	// GREEN_WAIT
+		2000,	// YELLOW_WAIT
+		2000,	// RED_WAIT
+		0,		// special case, period does not apply
+		0		// special case, period does not apply
+};
+
 void ClearOutputs()
 {
 	// TODO: unset all GPIO port/pins used for LEDs
