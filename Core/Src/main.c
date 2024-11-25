@@ -350,6 +350,7 @@ void StartStateHandler(void *argument)
 		for (int state_count = 0; state_count < 6; state_count++)
 		{
 			ChangeState(state_count);
+			RefreshStatus(&huart2);
 			osDelay(1000);
 		}
 	}
