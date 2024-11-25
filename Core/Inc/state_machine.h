@@ -36,19 +36,6 @@ typedef struct {
 
 
 /**
- * @brief: Initialization for state machine
- *
- * @details: Sets state machine struct variables and begins
- * traffic light operation at NS_TURNING_WAIT.
- *
- * Postconditions:
- * - ns_current_state = TURNING_WAIT
- * - ew_current_state = RED_WAIT
- */
-void SMInit();
-
-
-/**
  * @brief: Utility for deactivating all outputs
  *
  * @details: To be used before switching states; this ensures

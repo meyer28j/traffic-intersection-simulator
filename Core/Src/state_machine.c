@@ -8,7 +8,7 @@
 #include "state_machine.h"
 
 // state machine instance
-static TrafficLightStateMachine sm;
+static TrafficLightStateMachine sm = {RED_WAIT, RED_WAIT, NS};
 
 void SMInit()
 {

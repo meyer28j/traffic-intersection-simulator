@@ -343,8 +343,6 @@ static void MX_GPIO_Init(void)
 void StartStateHandler(void *argument)
 {
 	/* USER CODE BEGIN 5 */
-	// initialize state machine
-	SMInit();
 	/* Infinite loop */
 	for(;;)
 	{
