@@ -6,7 +6,7 @@
  */
 
 #include "state_machine.h"
-#include "gpio.h"
+#include "gpio.h" // LED on/off and clearAll()
 
 // state machine instance
 TrafficLightStateMachine sm = {RED_WAIT, RED_WAIT, NS};
@@ -14,28 +14,29 @@ TrafficLightStateMachine sm = {RED_WAIT, RED_WAIT, NS};
 // externally available state periods
 uint16_t state_periods[]= {
 		2000,	// TURNING_WAIT
-		4000,	// GREEN_WALK
+		2000,	// GREEN_WALK
 		2000,	// GREEN_WAIT_FLASH
 		2000,	// GREEN_WAIT
 		2000,	// YELLOW_WAIT
 		2000,	// RED_WAIT
-		0,		// special case, period does not apply
-		0		// special case, period does not apply
+		0,		// EMERGENCY, period does not apply
+		1000	// NO_POWER
 };
-
-void ClearOutputs()
-{
-	// TODO: unset all GPIO port/pins used for LEDs
-	return;
-}
 
 void ChangeState(State next_state)
 {
 	// turn off all LEDs regardless of state
-	ClearOutputs();
+	clearAll();
 
 	// get relevant state machine directional state
 	State* direction_state = sm.direction == NS ? &sm.ns_state : &sm.ew_state;
+
+	/*
+	 * update GPIO target based on direction and define other direction
+	 * to be able to turn on non-current direction LED_RED and LED_WAIT
+	 */
+	GPIO_TypeDef * GPIO_current = sm.direction == NS ? GPIOA : GPIOB;
+	GPIO_TypeDef * GPIO_other = sm.direction == NS ? GPIOB : GPIOA;
 
 	// change to the next state
 	if (xSemaphoreTake(stateMachineHandle, (TickType_t) 100) == pdTRUE)
@@ -43,6 +44,7 @@ void ChangeState(State next_state)
 		*direction_state = next_state;
 		xSemaphoreGive(stateMachineHandle);
 	}
+
 
 	/*
 	 * handle:
@@ -52,19 +54,29 @@ void ChangeState(State next_state)
 	switch (next_state)
 	{
 		case TURNING_WAIT:
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
+			ledOn(GPIO_current, LED_TURNING);
+			ledOn(GPIO_current, LED_WAIT);
 			// TODO: unblock blinking task for TURNING signal
 			break;
 		case GREEN_WALK:
+			ledOn(GPIO_current, LED_GREEN);
+			ledOn(GPIO_current, LED_WALK);
 			// TODO: block blinking task
 			break;
 		case GREEN_WAIT_FLASH:
+			ledOn(GPIO_current, LED_GREEN);
+			ledOn(GPIO_current, LED_WAIT);
 			// TODO: unblock blinking task for pedestrian WAIT
 			break;
 		case GREEN_WAIT:
+			ledOn(GPIO_current, LED_GREEN);
+			ledOn(GPIO_current, LED_WAIT);
 			// TODO: block blinking task
 			break;
 		case YELLOW_WAIT:
+			ledOn(GPIO_current, LED_YELLOW);
+			ledOn(GPIO_current, LED_WAIT);
+
 			/*
 			 * not needed under normal operation, as blinking was
 			 * blocked by prior state, but included anyways for
@@ -73,6 +85,9 @@ void ChangeState(State next_state)
 			// TODO: block blinking task (arguably redundant)
 			break;
 		case RED_WAIT:
+			ledOn(GPIO_current, LED_RED);
+			ledOn(GPIO_current, LED_WAIT);
+
 			// change direction
 			ChangeDirection();
 			break;
@@ -87,6 +102,12 @@ void ChangeState(State next_state)
 			// should never reach this point
 			Error_Handler();
 	}
+	/*
+	 * SPECIAL CASE: ensure opposite direction LED_RED
+	 * and LED_WAIT are always on
+	 */
+	ledOn(GPIO_other, LED_RED);
+	ledOn(GPIO_other, LED_WAIT);
 }
 
 void ChangeDirection()
