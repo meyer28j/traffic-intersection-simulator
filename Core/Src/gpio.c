@@ -10,20 +10,20 @@
 /*
  * LED control functions
  */
-void LED_toggle()
+void LED_toggle(GPIO_Typedef * port, uint16_t pin)
 {
-	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5); // toggle light
+	HAL_GPIO_TogglePin(port, pin); // toggle light
 	return;
 }
 
-void LED_off()
+void LED_off(GPIO_Typedef * port, uint16_t pin)
 {
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(port, pin, GPIO_PIN_RESET);
 	return;
 }
 
-void LED_on()
+void LED_on(GPIO_Typedef * port, uint16_t pin)
 {
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(port, pin, GPIO_PIN_SET);
 	return;
 }

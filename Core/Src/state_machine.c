@@ -6,6 +6,7 @@
  */
 
 #include "state_machine.h"
+#include "gpio.h"
 
 // state machine instance
 TrafficLightStateMachine sm = {RED_WAIT, RED_WAIT, NS};
@@ -51,6 +52,7 @@ void ChangeState(State next_state)
 	switch (next_state)
 	{
 		case TURNING_WAIT:
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET);
 			// TODO: unblock blinking task for TURNING signal
 			break;
 		case GREEN_WALK:
