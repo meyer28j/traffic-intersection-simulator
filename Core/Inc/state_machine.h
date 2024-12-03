@@ -7,8 +7,8 @@
  *      Author: jacob
  */
 
-#ifndef SRC_STATE_MACHINE_H_
-#define SRC_STATE_MACHINE_H_
+#ifndef STATE_MACHINE_H_
+#define STATE_MACHINE_H_
 
 #include <string.h>
 #include "stm32f1xx_hal.h"
@@ -109,4 +109,4 @@ const char* StateToString(State state);
  */
 const uint16_t StringToState(const char* state_name);
 
-#endif /* SRC_STATE_MACHINE_H_ */
+#endif /* STATE_MACHINE_H_ */

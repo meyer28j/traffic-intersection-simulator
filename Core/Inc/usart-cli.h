@@ -5,8 +5,8 @@
  *      Author: jacob
  */
 
-#ifndef INC_USART_CLI_H_
-#define INC_USART_CLI_H_
+#ifndef USART_CLI_H_
+#define USART_CLI_H_
 
 #include <stdio.h>
 #include <string.h>
@@ -30,4 +30,4 @@ void CLIInit(UART_HandleTypeDef* huart);
 void RefreshStatus(UART_HandleTypeDef* huart);
 void HandleInput(UART_HandleTypeDef* huart, uint8_t c);
 
-#endif /* INC_USART_CLI_H_ */
+#endif /* USART_CLI_H_ */
