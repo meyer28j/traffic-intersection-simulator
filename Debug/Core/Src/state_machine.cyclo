@@ -1,5 +1,4 @@
-../Core/Src/state_machine.c:25:6:ClearOutputs	1
-../Core/Src/state_machine.c:31:6:ChangeState	5
-../Core/Src/state_machine.c:90:6:ChangeDirection	2
-../Core/Src/state_machine.c:101:13:StateToString	9
-../Core/Src/state_machine.c:117:16:StringToState	9
+../Core/Src/state_machine.c:32:6:ChangeState	10
+../Core/Src/state_machine.c:136:6:ChangeDirection	2
+../Core/Src/state_machine.c:147:13:StateToString	9
+../Core/Src/state_machine.c:163:16:StringToState	9
