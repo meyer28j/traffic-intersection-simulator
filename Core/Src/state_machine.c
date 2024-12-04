@@ -26,14 +26,16 @@ uint16_t state_periods[]= {
 State * direction_state = NULL;
 GPIO_TypeDef * GPIO_current = NULL;
 GPIO_TypeDef * GPIO_other = NULL;
-ledPins * pins = NULL;
-ledPins * pins_other = NULL;
+const ledPins * pins = NULL;
+const ledPins * pins_other = NULL;
 
 void ChangeState(State next_state)
 {
 	// turn off all LEDs regardless of state
 	clearAll();
 
+	// update state-direction based values - used in switch-case
+	// to allow generic functions
 	if (sm.direction == NS)
 	{
 		direction_state = &sm.ns_state;
@@ -51,23 +53,12 @@ void ChangeState(State next_state)
 		pins_other = &PINS_NS;
 	}
 
-	// get relevant state machine directional state
-	//State* direction_state = sm.direction == NS ? &sm.ns_state : &sm.ew_state;
-
-	/*
-	 * update GPIO target based on direction and define other direction
-	 * to be able to turn on non-current direction LED_RED and LED_WAIT
-	 */
-	//GPIO_TypeDef * GPIO_current = sm.direction == NS ? GPIOA : GPIOB;
-	//GPIO_TypeDef * GPIO_other = sm.direction == NS ? GPIOB : GPIOA;
-
 	// change to the next state
 	if (xSemaphoreTake(stateMachineHandle, (TickType_t) 100) == pdTRUE)
 	{
 		*direction_state = next_state;
 		xSemaphoreGive(stateMachineHandle);
 	}
-
 
 	/*
 	 * handle:
