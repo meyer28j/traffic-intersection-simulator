@@ -14,6 +14,22 @@
  * Values taken from wiring schematic, align pin
  * with connected traffic light purpose
  */
+typedef struct
+{
+	uint16_t WALK;
+	uint16_t WAIT;
+	uint16_t TURNING;
+	uint16_t GREEN;
+	uint16_t YELLOW;
+	uint16_t RED;
+} ledPins;
+
+// north/south uses GPIOA
+extern const ledPins PINS_NS;
+
+// east/west uses GPIOB
+extern const ledPins PINS_EW;
+/*
 // north/south uses GPIOA
 typedef enum
 {
@@ -26,28 +42,15 @@ typedef enum
 } ledPinNS;
 
 // east/west uses GPIOB
-/*
 typedef enum
 {
-	LED_WALK = GPIO_PIN_,
-	LED_WAIT = GPIO_PIN_,
-	LED_TURNING = GPIO_PIN_,
-	LED_GREEN = GPIO_PIN_,
-	LED_YELLOW = GPIO_PIN_,
-	LED_RED = GPIO_PIN_
+	LED_WALK = GPIO_PIN_6,
+	LED_WAIT = GPIO_PIN_4,
+	LED_TURNING = GPIO_PIN_8,
+	LED_GREEN = GPIO_PIN_9,
+	LED_YELLOW = GPIO_PIN_10,
+	LED_RED = GPIO_PIN_13
 } ledPinEW;
-*/
-
-/*
-const ledPinEW pinsEW[] =
-{
-		LED_WALK,
-		LED_WAIT,
-		LED_TURNING,
-		LED_GREEN,
-		LED_YELLOW,
-		LED_RED,
-};
 */
 // LED control functions
 void ledToggle(GPIO_TypeDef * port, uint16_t pin);
