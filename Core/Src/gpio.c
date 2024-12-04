@@ -25,7 +25,7 @@ const ledPins PINS_EW =
 	.TURNING = GPIO_PIN_8,
 	.GREEN = GPIO_PIN_9,
 	.YELLOW = GPIO_PIN_10,
-	.RED = GPIO_PIN_13
+	.RED = GPIO_PIN_0
 };
 
 /*
