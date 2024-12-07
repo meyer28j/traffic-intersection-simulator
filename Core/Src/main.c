@@ -48,21 +48,21 @@ osThreadId_t stateHandlerHandle;
 const osThreadAttr_t stateHandler_attributes = {
   .name = "stateHandler",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 /* Definitions for updateCLI */
 osThreadId_t updateCLIHandle;
 const osThreadAttr_t updateCLI_attributes = {
   .name = "updateCLI",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityLow3,
 };
 /* Definitions for startCLIIT */
 osThreadId_t startCLIITHandle;
 const osThreadAttr_t startCLIIT_attributes = {
   .name = "startCLIIT",
   .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityBelowNormal,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for blinkDirection */
 osThreadId_t blinkDirectionHandle;
@@ -370,7 +370,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		Error_Handler();
 	}
 	HAL_UART_Receive_IT(huart, &RXChar, 1);
-
+/*
 	// wait until status is ok
 	while((HAL_UART_GetState(huart)&HAL_UART_STATE_BUSY_RX)
 			== HAL_UART_STATE_BUSY_RX);
@@ -380,6 +380,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	{
 		Error_Handler();
 	}
+	*/
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)

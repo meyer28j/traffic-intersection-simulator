@@ -143,7 +143,7 @@ void HandleInput(UART_HandleTypeDef* huart, uint8_t c)
 		{
 			return; // beginning of input, do nothing
 		}
-		input[c_pos] = 0;
+		input[c_pos] = '\0';
 		c_pos--;
 		// display character deletion
 		HAL_UART_Transmit(huart, (uint8_t*)"\b \b", 3, TIMEOUT);
