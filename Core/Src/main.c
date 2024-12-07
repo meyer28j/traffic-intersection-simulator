@@ -370,7 +370,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		Error_Handler();
 	}
 	HAL_UART_Receive_IT(huart, &RXChar, 1);
-	/*
+
 	// wait until status is ok
 	while((HAL_UART_GetState(huart)&HAL_UART_STATE_BUSY_RX)
 			== HAL_UART_STATE_BUSY_RX);
@@ -380,7 +380,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	{
 		Error_Handler();
 	}
-	*/
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
@@ -416,13 +415,21 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 void StartStateHandler(void *argument)
 {
   /* USER CODE BEGIN 5 */
+	TickType_t xStatePeriod;
 	/* Infinite loop */
 	for(;;)
 	{
 		ChangeState((current_state + 1) % 6); // 6 normal states of operation
 		RefreshStatus(&huart2);
+
+		// resume blinking task
 		// current_state is updated after calling ChangeState()
-		osDelay(state_periods[current_state]);
+		if (current_state == 0 || current_state == 2)
+		{ // TURNING_WAIT and GREEN_WAIT_FLASH
+			vTaskResume(blinkDirectionHandle);
+		}
+		xStatePeriod = pdMS_TO_TICKS(state_periods[current_state]);
+		vTaskDelay(xStatePeriod);
 	}
   /* USER CODE END 5 */
 }
@@ -485,14 +492,45 @@ void StartCLIInterrupt(void *argument)
 void StartBlinkDirection(void *argument)
 {
   /* USER CODE BEGIN StartBlinkDirection */
-	// TODO: 	refactor to use an LED provided from argument
-	//			rather than figuring it out from a given direction
-	Direction direction = *((Direction *) argument);
+	extern State current_state;
+	extern Direction current_direction;
 
-	/* Infinite loop */
-	for(;;)
+	GPIO_TypeDef * gpioPort;
+	const ledPins * currentLEDs;
+
+	const TickType_t xBlinkRate = pdMS_TO_TICKS(300);
+
+	for (;;)
 	{
-	osDelay(1);
+		// suspend until a task notification occurs
+		// resumed by state change
+		//ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+		if (!(current_state == 0 || current_state == 2))
+		{ // TURNING_WAIT and GREEN_WAIT_FLASH
+			vTaskSuspend(blinkDirectionHandle);
+		}
+		if (current_direction == NS)
+		{
+			gpioPort = GPIOA;  // NS uses GPIOA
+			currentLEDs = &PINS_NS;
+		}
+		else if (current_direction == EW)
+		{
+			gpioPort = GPIOB;  // EW uses GPIOB
+			currentLEDs = &PINS_EW;
+		}
+		// determine which LED to blink based on the current state
+		if (current_state == 0) // TURNING_WAIT
+		{
+			HAL_GPIO_TogglePin(gpioPort, currentLEDs->TURNING);
+		}
+		else if (current_state == 2) // GREEN_WAIT_FLASHING
+		{
+			HAL_GPIO_TogglePin(gpioPort, currentLEDs->WAIT);
+		}
+
+		// wait for the blink interval before toggling again
+		vTaskDelay(xBlinkRate);
 	}
   /* USER CODE END StartBlinkDirection */
 }

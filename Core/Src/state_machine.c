@@ -13,10 +13,10 @@ TrafficLightStateMachine sm = {RED_WAIT, RED_WAIT, NS};
 
 // externally available state periods
 uint16_t state_periods[]= {
-		1000,	// TURNING_WAIT
-		2000,	// GREEN_WALK
-		1000,	// GREEN_WAIT_FLASH
-		1000,	// GREEN_WAIT
+		3000,	// TURNING_WAIT
+		3000,	// GREEN_WALK
+		2000,	// GREEN_WAIT_FLASH
+		2000,	// GREEN_WAIT
 		1000,	// YELLOW_WAIT
 		1000,	// RED_WAIT
 		0,		// EMERGENCY, period does not apply
@@ -24,6 +24,7 @@ uint16_t state_periods[]= {
 };
 
 State current_state = TURNING_WAIT;
+Direction current_direction = NS;
 
 State * direction_state = NULL;
 GPIO_TypeDef * GPIO_current = NULL;
@@ -155,6 +156,7 @@ void ChangeDirection()
 	if (xSemaphoreTake(stateMachineHandle, (TickType_t) 100) == pdTRUE)
 	{
 		sm.direction = sm.direction == NS ? EW : NS;
+		current_direction = sm.direction;
 		xSemaphoreGive(stateMachineHandle);
 	}
 }

@@ -47,6 +47,7 @@ typedef struct
 extern uint16_t state_periods[];
 
 extern State current_state;
+extern Direction current_direction;
 
 // make available to CLI status updates
 extern TrafficLightStateMachine sm;
