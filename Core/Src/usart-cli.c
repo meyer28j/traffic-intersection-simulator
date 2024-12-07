@@ -109,18 +109,17 @@ void HandleInput(UART_HandleTypeDef* huart, uint8_t c)
 				// convert state argument to enum
 				uint16_t period_state = StringToState(period_arg_state);
 				if (period_arg_ms > 30000 || period_arg_ms < 1000
-					|| period_state == -1)
+					|| period_state == 65535)
 				{
 					HAL_UART_Transmit(huart, (uint8_t*)ERROR_PERIOD, strlen(ERROR_PERIOD), TIMEOUT);
 				}
 				else
 				{
-					// TODO: uncomment this block when this function is no longer called from an interrupt
-					//if (xSemaphoreTake(statePeriodHandle, (TickType_t) 100) == pdTRUE)
-					//{
+					if (xSemaphoreTake(statePeriodHandle, (TickType_t) 100) == pdTRUE)
+					{
 						state_periods[period_state] = period_arg_ms;
-					//	xSemaphoreGive(statePeriodHandle);
-					//}
+						xSemaphoreGive(statePeriodHandle);
+					}
 					snprintf(response, MSG_LEN, "Updating %s period to %d\r\n", period_arg_state, period_arg_ms);
 					HAL_UART_Transmit(huart, (uint8_t*)response, strlen(response), TIMEOUT);
 					RefreshStatus(huart);

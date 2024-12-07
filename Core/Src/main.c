@@ -61,7 +61,7 @@ const osThreadAttr_t updateCLI_attributes = {
 osThreadId_t startCLIITHandle;
 const osThreadAttr_t startCLIIT_attributes = {
   .name = "startCLIIT",
-  .stack_size = 128 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityBelowNormal,
 };
 /* Definitions for blinkDirection */
@@ -70,6 +70,11 @@ const osThreadAttr_t blinkDirection_attributes = {
   .name = "blinkDirection",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for cliChar */
+osMessageQueueId_t cliCharHandle;
+const osMessageQueueAttr_t cliChar_attributes = {
+  .name = "cliChar"
 };
 /* Definitions for stateMachine */
 osMutexId_t stateMachineHandle;
@@ -169,6 +174,10 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of cliChar */
+  cliCharHandle = osMessageQueueNew (32, sizeof(uint8_t), &cliChar_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -354,20 +363,24 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	// process input string
-	HandleInput(huart, RXChar);
-
+	// push received char into queue
+	if (xQueueSendFromISR(cliCharHandle, &RXChar, NULL) != pdPASS)
+	{
+		// queue full or something went wrong
+		Error_Handler();
+	}
+	HAL_UART_Receive_IT(huart, &RXChar, 1);
+	/*
 	// wait until status is ok
 	while((HAL_UART_GetState(huart)&HAL_UART_STATE_BUSY_RX)
 			== HAL_UART_STATE_BUSY_RX);
-	//Listen for the interrupt and buffer one character at a time.
+	// restart UART character reception
 	status = HAL_UART_Receive_IT(huart, &RXChar, 1);
 	if (status != HAL_OK)
 	{
 		Error_Handler();
 	}
-
-	return;
+	*/
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
@@ -406,7 +419,6 @@ void StartStateHandler(void *argument)
 	/* Infinite loop */
 	for(;;)
 	{
-
 		ChangeState((current_state + 1) % 6); // 6 normal states of operation
 		RefreshStatus(&huart2);
 		// current_state is updated after calling ChangeState()
@@ -451,9 +463,15 @@ void StartCLIInterrupt(void *argument)
 	// interrupt callback restarts the Receive_IT call
 	HAL_UART_Receive_IT(&huart2, &RXChar, 1);
 
-	// suspend task as the utility is handled
-	// by the interrupt callback
-	vTaskSuspend(NULL);
+	char nextChar = '\0';
+	for (;;)
+	{
+		// block until a character is available in queue
+		if (xQueueReceive(cliCharHandle, &nextChar, portMAX_DELAY) == pdPASS)
+		{
+			HandleInput(&huart2, nextChar);
+		}
+	}
   /* USER CODE END StartCLIInterrupt */
 }
 

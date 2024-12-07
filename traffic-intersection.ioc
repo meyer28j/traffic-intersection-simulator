@@ -2,10 +2,13 @@
 CAD.formats=
 CAD.pinconfig=
 CAD.provider=
-FREERTOS.FootprintOK=true
-FREERTOS.IPParameters=Tasks01,configUSE_NEWLIB_REENTRANT,FootprintOK,Mutexes01
+FREERTOS.FootprintOK=false
+FREERTOS.IPParameters=Tasks01,configUSE_NEWLIB_REENTRANT,FootprintOK,Mutexes01,Queues01,configMINIMAL_STACK_SIZE,configTOTAL_HEAP_SIZE
 FREERTOS.Mutexes01=stateMachine,Dynamic,NULL,Available;statePeriod,Dynamic,NULL,Available
-FREERTOS.Tasks01=stateHandler,24,128,StartStateHandler,Default,NULL,Dynamic,NULL,NULL;updateCLI,8,128,StartUpdateCLI,Default,NULL,Dynamic,NULL,NULL;startCLIIT,16,128,StartCLIInterrupt,Default,NULL,Dynamic,NULL,NULL;blinkDirection,8,128,StartBlinkDirection,Default,NULL,Dynamic,NULL,NULL
+FREERTOS.Queues01=cliChar,32,uint8_t,0,Dynamic,NULL,NULL
+FREERTOS.Tasks01=stateHandler,24,128,StartStateHandler,Default,NULL,Dynamic,NULL,NULL;updateCLI,8,128,StartUpdateCLI,Default,NULL,Dynamic,NULL,NULL;startCLIIT,16,256,StartCLIInterrupt,Default,NULL,Dynamic,NULL,NULL;blinkDirection,8,128,StartBlinkDirection,Default,NULL,Dynamic,NULL,NULL
+FREERTOS.configMINIMAL_STACK_SIZE=128
+FREERTOS.configTOTAL_HEAP_SIZE=6144
 FREERTOS.configUSE_NEWLIB_REENTRANT=1
 File.Version=6
 GPIO.groupedBy=Group By Peripherals
