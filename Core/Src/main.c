@@ -313,6 +313,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : PC0 PC1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
   /*Configure GPIO pins : PA1 PA6 PA7 PA8
                            PA9 PA10 */
   GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8
@@ -332,6 +338,12 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
@@ -362,6 +374,23 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 	// do nothing! :O
 }
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	/*
+	 * No debounce is needed as this simply sets a flag to 1,
+	 * to be unset later when the state changes to GREEN_WALK
+	 * for a given direction
+	 */
+	if (GPIO_Pin == GPIO_PIN_0)
+	{ // PC0 for NS crosswalk
+		SetCrosswalkFlag("N");
+	}
+	else if (GPIO_Pin == GPIO_PIN_1)
+	{ // PC1 for EW crosswalk
+		SetCrosswalkFlag("E");
+	}
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartStateHandler */
@@ -377,13 +406,11 @@ void StartStateHandler(void *argument)
 	/* Infinite loop */
 	for(;;)
 	{
-		// DEBUG: cycle through each standard state
-		for (int state_count = 0; state_count < 6; state_count++)
-		{
-			ChangeState(state_count);
-			RefreshStatus(&huart2);
-			osDelay(state_periods[state_count]);
-		}
+
+		ChangeState((current_state + 1) % 6); // 6 normal states of operation
+		RefreshStatus(&huart2);
+		// current_state is updated after calling ChangeState()
+		osDelay(state_periods[current_state]);
 	}
   /* USER CODE END 5 */
 }

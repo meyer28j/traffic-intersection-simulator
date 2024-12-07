@@ -14,7 +14,7 @@ TrafficLightStateMachine sm = {RED_WAIT, RED_WAIT, NS};
 // externally available state periods
 uint16_t state_periods[]= {
 		1000,	// TURNING_WAIT
-		1000,	// GREEN_WALK
+		2000,	// GREEN_WALK
 		1000,	// GREEN_WAIT_FLASH
 		1000,	// GREEN_WAIT
 		1000,	// YELLOW_WAIT
@@ -22,6 +22,8 @@ uint16_t state_periods[]= {
 		0,		// EMERGENCY, period does not apply
 		1000	// NO_POWER
 };
+
+State current_state = TURNING_WAIT;
 
 State * direction_state = NULL;
 GPIO_TypeDef * GPIO_current = NULL;
@@ -60,6 +62,8 @@ void ChangeState(State next_state)
 		xSemaphoreGive(stateMachineHandle);
 	}
 
+	//current_state = next_state;
+
 	/*
 	 * handle:
 	 * 1. new state needs to enable/disable flashing lights
@@ -71,21 +75,39 @@ void ChangeState(State next_state)
 			ledOn(GPIO_current, pins->TURNING);
 			ledOn(GPIO_current, pins->WAIT);
 			// TODO: unblock blinking task for TURNING signal
+			current_state = TURNING_WAIT;
 			break;
 		case GREEN_WALK:
-			ledOn(GPIO_current, pins->GREEN);
-			ledOn(GPIO_current, pins->WALK);
 			// TODO: block blinking task
-			break;
+			if ((sm.direction == NS && sm.ns_crosswalk)
+				|| (sm.direction == EW && sm.ew_crosswalk))
+			{
+				ledOn(GPIO_current, pins->GREEN);
+				ledOn(GPIO_current, pins->WALK);
+				current_state = GREEN_WALK;
+				break;
+			}
+			// INTENTIONALLY do not break to instead flow into
+			// GREEN_WAIT state in the case that no pedestrian
+			// has hit the crosswalk button
 		case GREEN_WAIT_FLASH:
-			ledOn(GPIO_current, pins->GREEN);
-			ledOn(GPIO_current, pins->WAIT);
 			// TODO: unblock blinking task for pedestrian WAIT
-			break;
+			if ((sm.direction == NS && sm.ns_crosswalk)
+				|| (sm.direction == EW && sm.ew_crosswalk))
+			{
+				ledOn(GPIO_current, pins->GREEN);
+				ledOn(GPIO_current, pins->WAIT);
+				if (sm.direction == NS) sm.ns_crosswalk = 0;
+				if (sm.direction == EW) sm.ew_crosswalk = 0;
+				current_state = GREEN_WAIT_FLASH;
+				break;
+			}
+			// INTENTIONALLY do not break as above
 		case GREEN_WAIT:
+			// TODO: block blinking task
 			ledOn(GPIO_current, pins->GREEN);
 			ledOn(GPIO_current, pins->WAIT);
-			// TODO: block blinking task
+			current_state = GREEN_WAIT;
 			break;
 		case YELLOW_WAIT:
 			ledOn(GPIO_current, pins->YELLOW);
@@ -97,6 +119,7 @@ void ChangeState(State next_state)
 			 * robustness in case GREEN_WAIT was skipped
 			 */
 			// TODO: block blinking task (arguably redundant)
+			current_state = YELLOW_WAIT;
 			break;
 		case RED_WAIT:
 			ledOn(GPIO_current, pins->RED);
@@ -104,6 +127,7 @@ void ChangeState(State next_state)
 
 			// change direction
 			ChangeDirection();
+			current_state = RED_WAIT;
 			break;
 		case EMERGENCY:
 			// TODO: block state changing until emergency lifted
@@ -132,6 +156,18 @@ void ChangeDirection()
 	{
 		sm.direction = sm.direction == NS ? EW : NS;
 		xSemaphoreGive(stateMachineHandle);
+	}
+}
+
+void SetCrosswalkFlag(char * direction)
+{
+	if (strcmp(direction, "N") == 0)
+	{
+		sm.ns_crosswalk = 1;
+	}
+	else if (strcmp(direction,"E") == 0)
+	{
+		sm.ew_crosswalk = 1;
 	}
 }
 

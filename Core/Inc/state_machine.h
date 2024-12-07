@@ -38,11 +38,15 @@ typedef struct
 	State ns_state;			// current north/south lights state
 	State ew_state;			// current east/west lights state
 	Direction direction;	// current direction (NS or EW)
+	uint8_t ns_crosswalk;	// flag for NS pedestrian crosswalk button
+	uint8_t ew_crosswalk;	// flag for EW pedestrian crosswalk button
 } TrafficLightStateMachine;
 
 // externally available to CLI to update periods
 // TODO: near end of project, update to realistic times
 extern uint16_t state_periods[];
+
+extern State current_state;
 
 // make available to CLI status updates
 extern TrafficLightStateMachine sm;
@@ -90,14 +94,27 @@ void ChangeState(State next_state);
  * @brief: Toggles the direction between NS and EW
  *
  * Preconditions:
- * - state machine must be intialized
+ * - state machine must be initialized
  *
- * Postconditions
+ * Postconditions:
  * - state machine member "direction" changed to either
  * NS or EW depending on existing direction
  */
 void ChangeDirection();
 
+/**
+ * @brief: Sets either the NS or EW flag based on direction input.
+ * To be used later when changing state to GREEN_WALK for a given
+ * direction, at which point the flag is reset to 0.
+ *
+ * Preconditions:
+ * - state machine must be initialized
+ *
+ * Postconditions:
+ * - state machine member "ns_crosswalk" or "ew_crosswalk" set to
+ * 1 based on char input "N" or "E"
+ */
+void SetCrosswalkFlag(char * direction);
 
 /**
  * @brief: Utility for retrieving state name from enum
