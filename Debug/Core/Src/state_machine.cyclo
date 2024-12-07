@@ -1,4 +1,5 @@
-../Core/Src/state_machine.c:32:6:ChangeState	10
-../Core/Src/state_machine.c:136:6:ChangeDirection	2
-../Core/Src/state_machine.c:147:13:StateToString	9
-../Core/Src/state_machine.c:163:16:StringToState	9
+../Core/Src/state_machine.c:35:6:ChangeState	20
+../Core/Src/state_machine.c:152:6:ChangeDirection	2
+../Core/Src/state_machine.c:164:6:SetCrosswalkFlag	3
+../Core/Src/state_machine.c:176:13:StateToString	9
+../Core/Src/state_machine.c:192:16:StringToState	9

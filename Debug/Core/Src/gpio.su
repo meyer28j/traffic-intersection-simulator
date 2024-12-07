@@ -1,4 +1,4 @@
-../Core/Src/gpio.c:77:6:ledToggle	16	static
-../Core/Src/gpio.c:83:6:ledOff	16	static
-../Core/Src/gpio.c:89:6:ledOn	16	static
-../Core/Src/gpio.c:95:6:clearAll	8	static
+../Core/Src/gpio.c:34:6:ledToggle	16	static
+../Core/Src/gpio.c:40:6:ledOff	16	static
+../Core/Src/gpio.c:46:6:ledOn	16	static
+../Core/Src/gpio.c:52:6:clearAll	8	static
