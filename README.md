@@ -32,10 +32,3 @@ There are 2 interrupts:
 As previously mentioned, a CLI character queue is populated by UART interrupts and then processed by the startCLIIT thread when available.
 
 Mutexes are used to control access to the state machine (e.g. ChangeState function) and each state's period updates (e.g. HandleInput function when a period-update command is entered).
-
-## Development
-This project will be executed in two main phases:
-1. The software interface and state machine implementation
-    - See [Milestone Document](./doc/milestone-requirements.md)
-2. The circuit construction and connection to the board
-3. Handling pedestrian input (i.e. only displaying "walk" if a pedestrian has hit the crosswalk button) and refinement of timing for each state (e.g. turn-signal duration != all-red-lights duration)
