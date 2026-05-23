@@ -1,7 +1,13 @@
 # Traffic Intersection Simulator
 
 ## Summary
-This project simulates a controller for a 4-way symmetrical traffic intersection using an RTOS on the Nucleo STM32-F103RB development board. 
+This project simulates a controller for a 4-way symmetrical traffic intersection using an RTOS on the Nucleo STM32-F103RB development board. [View the demo on Youtube.](https://www.youtube.com/shorts/yhkGNDSMOJE)
+
+---
+
+![Breadboard prototype of the lights and buttons for the intersection](./breadboard-traffic-intersection.png)
+
+---
 
 Each set of lights is composed of a turn signal lamp, green lamp, yellow lamp, and red lamp. Each corner of the intersection also has two sets of two lamps, white and red, for controlling pedestrian traffic in each direction in accordance with the vehicle traffic. Each symmetrical component (e.g. the "north" traffic lights and opposing "south" traffic lights) are wired together into the same controlling port for simplicity. The lights run on an adjustable timer, cycling back and forth between traffic flowing North-South and East-West along with the respective pedestrian Walk and Wait signals.
 
